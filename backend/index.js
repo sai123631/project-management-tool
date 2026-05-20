@@ -20,21 +20,22 @@ app.get('/', (req, res) => {
 
 const startServer = async () => {
   try {
-    let mongoUri = process.env.MONGODB_URI;
+    const mongoUri = process.env.MONGO_URI;
     
-    // Try to start mongodb-memory-server for local preview
-    const { MongoMemoryServer } = require('mongodb-memory-server');
-    const mongod = await MongoMemoryServer.create();
-    mongoUri = mongod.getUri();
+    if (!mongoUri) {
+      console.error('ERROR: MONGO_URI is missing from environment variables!');
+      process.exit(1);
+    }
     
     await mongoose.connect(mongoUri);
-    console.log('Connected to In-Memory MongoDB');
+    console.log('Connected to MongoDB Atlas');
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
     console.error('MongoDB connection error:', err);
+    process.exit(1);
   }
 };
 
